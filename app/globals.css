@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap");
+
+:root {
+  --navy-900: #0a1628;
+  --navy-800: #0f1f3a;
+  --navy-700: #1a2942;
+  --gold-500: #ffd700;
+  --gold-600: #ffc700;
+  --ocean-500: #00ced1;
+  --ocean-400: #48cae4;
+  --sunset-500: #ff6b35;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--navy-900);
+  color: #ffffff;
+  font-family: "Inter", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Playfair Display", serif;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-500 text-navy-900 font-semibold px-8 py-3 rounded-md transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl shadow-gold-500/50;
+  }
+
+  .btn-secondary {
+    @apply border-2 border-ocean-500 text-ocean-400 hover:bg-gradient-to-r hover:from-ocean-500 hover:to-gold-500 hover:text-navy-900 hover:border-transparent font-semibold px-8 py-3 rounded-md transition-all duration-300 shadow-lg shadow-ocean-500/20 hover:shadow-ocean-500/40;
+  }
+
+  .section-padding {
+    @apply py-16 md:py-24 px-4 md:px-8;
+  }
+
+  .container-custom {
+    @apply max-w-7xl mx-auto;
+  }
+
+  .card-luxury {
+    @apply bg-gradient-to-br from-navy-800 to-navy-700 border border-ocean-500/20 rounded-lg p-6 transition-all duration-300 hover:border-ocean-500/40 hover:shadow-xl hover:shadow-ocean-500/20 hover:scale-[1.02];
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--navy-800);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--gold-500), var(--ocean-500));
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--ocean-500), var(--gold-500));
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Date Picker Custom Styles */
+.react-datepicker {
+  background-color: var(--navy-800) !important;
+  border-color: var(--gold-500) !important;
+}
+
+.react-datepicker__header {
+  background-color: var(--navy-700) !important;
+  border-bottom-color: var(--gold-500) !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name,
+.react-datepicker__day {
+  color: #ffffff !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: var(--gold-500) !important;
+  color: var(--navy-900) !important;
+}
+
+.react-datepicker__day--selected {
+  background-color: var(--gold-500) !important;
+  color: var(--navy-900) !important;
+}
