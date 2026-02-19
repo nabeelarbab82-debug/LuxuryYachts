@@ -5,10 +5,12 @@ import { useParams } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import StripeCheckout from '@/components/StripeCheckout';
 import { motion } from 'framer-motion';
 import {
     FaCalendar, FaClock, FaUsers, FaWhatsapp, FaCheck,
-    FaMapMarkerAlt, FaShip, FaStar, FaChevronLeft, FaChevronRight
+    FaMapMarkerAlt, FaShip, FaStar, FaChevronLeft, FaChevronRight,
+    FaUserAlt, FaEnvelope, FaPhone, FaCreditCard, FaArrowLeft, FaUser, FaCheckCircle
 } from 'react-icons/fa';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -20,6 +22,15 @@ export default function PackageDetailPage() {
     const [package_, setPackage] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [step, setStep] = useState<'form' | 'payment' | 'success'>('form');
+    const [submitting, setSubmitting] = useState(false);
+
+    // Contact information
+    const [contactInfo, setContactInfo] = useState({
+        name: '',
+        email: '',
+        phone: '',
+    });
 
     // Booking form state
     const [bookingData, setBookingData] = useState({
@@ -39,6 +50,16 @@ export default function PackageDetailPage() {
         vat: 0,
         total: 0,
     });
+
+    const [paymentData, setPaymentData] = useState<{
+        clientSecret: string;
+        orderId: string;
+        orderNumber: string;
+        bookingId: string;
+        totalAmount: number;
+        subtotal: number;
+        vat: number;
+    } | null>(null);
 
     useEffect(() => {
         fetchPackage();
@@ -95,6 +116,81 @@ export default function PackageDetailPage() {
     };
 
     const handleBooking = async () => {
+        // Validation
+        if (!contactInfo.name || !contactInfo.email || !contactInfo.phone) {
+            alert('Please fill in your contact information');
+            return;
+        }
+
+        if (!bookingData.date) {
+            alert('Please select a date');
+            return;
+        }
+
+        const totalGuests = bookingData.adults + bookingData.children + bookingData.infants;
+        if (totalGuests === 0) {
+            alert('Please select at least one guest');
+            return;
+        }
+
+        setSubmitting(true);
+
+        try {
+            // Create payment intent with booking data
+            const response = await fetch('/api/payment/create-intent', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    bookingData: {
+                        packageId: package_._id,
+                        packageName: package_.title || package_.name,
+                        name: contactInfo.name,
+                        email: contactInfo.email,
+                        phone: contactInfo.phone,
+                        date: bookingData.date,
+                        startTime: bookingData.startTime,
+                        bookingHours: bookingData.bookingHours,
+                        adults: bookingData.adults,
+                        children: bookingData.children,
+                        infants: bookingData.infants,
+                        package: package_.type || 'custom',
+                        guests: totalGuests,
+                        specialRequests: `Package: ${package_.title || package_.name}\nPickup: ${bookingData.pickupPoint || 'N/A'}\nMeeting Point: ${bookingData.meetingPoint || 'N/A'}\nStart Time: ${bookingData.startTime}\nHours: ${bookingData.bookingHours}\nAdults: ${bookingData.adults}, Children: ${bookingData.children}, Infants: ${bookingData.infants}\n${bookingData.specialRequests}`,
+                    },
+                    calculatedAmounts: {
+                        subtotal: bookingCalculation.subtotal,
+                        vat: bookingCalculation.vat,
+                        total: bookingCalculation.total,
+                        vatPercentage: package_.pricing?.vatPercentage || package_.vatPercentage || 5,
+                    },
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                setPaymentData({
+                    clientSecret: data.clientSecret,
+                    orderId: data.orderId,
+                    orderNumber: data.orderNumber,
+                    bookingId: data.bookingId,
+                    totalAmount: bookingCalculation.total,
+                    subtotal: bookingCalculation.subtotal,
+                    vat: bookingCalculation.vat,
+                });
+                setStep('payment');
+            } else {
+                alert(data.error || 'Failed to create booking. Please try again.');
+            }
+        } catch (error) {
+            console.error('Booking error:', error);
+            alert('Failed to create booking. Please try again or contact us on WhatsApp.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleWhatsAppBooking = () => {
         if (!bookingData.date) {
             alert('Please select a date');
             return;
@@ -105,6 +201,36 @@ export default function PackageDetailPage() {
 
         const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '971XXXXXXXXX';
         window.open(`https://wa.me/${number}?text=${encodeURIComponent(message)}`, '_blank');
+    };
+
+    const handlePaymentSuccess = () => {
+        setStep('success');
+    };
+
+    const handlePaymentError = (error: string) => {
+        alert(`Payment failed: ${error}`);
+    };
+
+    const handleBackToForm = () => {
+        setStep('form');
+        setPaymentData(null);
+    };
+
+    const handleNewBooking = () => {
+        setStep('form');
+        setPaymentData(null);
+        setContactInfo({ name: '', email: '', phone: '' });
+        setBookingData({
+            date: null,
+            startTime: '08:00',
+            bookingHours: 2,
+            adults: 2,
+            children: 0,
+            infants: 0,
+            pickupPoint: '',
+            meetingPoint: '',
+            specialRequests: '',
+        });
     };
 
     const timeSlots = [
@@ -161,12 +287,14 @@ export default function PackageDetailPage() {
                                     <button
                                         onClick={() => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length)}
                                         className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-navy-900/80 hover:bg-navy-900 text-white p-3 rounded-full transition-colors"
+                                        aria-label="Previous image"
                                     >
                                         <FaChevronLeft />
                                     </button>
                                     <button
                                         onClick={() => setCurrentImageIndex((prev) => (prev + 1) % images.length)}
                                         className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-navy-900/80 hover:bg-navy-900 text-white p-3 rounded-full transition-colors"
+                                        aria-label="Next image"
                                     >
                                         <FaChevronRight />
                                     </button>
@@ -179,6 +307,7 @@ export default function PackageDetailPage() {
                                                 onClick={() => setCurrentImageIndex(index)}
                                                 className={`w-2 h-2 rounded-full transition-all ${index === currentImageIndex ? 'bg-gold-500 w-8' : 'bg-white/50'
                                                     }`}
+                                                aria-label={`Go to image ${index + 1}`}
                                             />
                                         ))}
                                     </div>
@@ -377,6 +506,7 @@ export default function PackageDetailPage() {
                                                 value={bookingData.startTime}
                                                 onChange={(e) => setBookingData({ ...bookingData, startTime: e.target.value })}
                                                 className="w-full bg-navy-700 border border-gold-500/30 rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-500"
+                                                aria-label="Select start time"
                                             >
                                                 {timeSlots.map((time) => (
                                                     <option key={time} value={time}>{time}</option>
@@ -396,6 +526,7 @@ export default function PackageDetailPage() {
                                                     value={bookingData.bookingHours}
                                                     onChange={(e) => setBookingData({ ...bookingData, bookingHours: parseInt(e.target.value) })}
                                                     className="w-full bg-navy-700 border border-gold-500/30 rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-500"
+                                                    aria-label="Booking hours"
                                                 />
                                                 <p className="text-xs text-gray-400 mt-1">
                                                     Minimum booking hour: {package_.minimumBookingHours || 2}
@@ -487,37 +618,179 @@ export default function PackageDetailPage() {
                                             </div>
                                         </div>
 
-                                        {/* Price Breakdown */}
-                                        <div className="border-t border-gold-500/20 pt-4 space-y-2">
-                                            <div className="flex justify-between text-gray-300">
-                                                <span>Subtotal</span>
-                                                <span>AED {bookingCalculation.subtotal.toFixed(2)}</span>
-                                            </div>
-                                            <div className="flex justify-between text-gray-300">
-                                                <span>VAT ({package_.pricing?.vatPercentage || 5}%)</span>
-                                                <span>AED {bookingCalculation.vat.toFixed(2)}</span>
-                                            </div>
-                                            <div className="flex justify-between text-xl font-bold text-white border-t border-gold-500/20 pt-2">
-                                                <span>Total</span>
-                                                <span className="text-gold-500">AED {bookingCalculation.total.toFixed(2)}</span>
-                                            </div>
-                                        </div>
+                                        {/* Step 1: Booking Form */}
+                                        {step === 'form' && (
+                                            <>
+                                                {/* Contact Information */}
+                                                <div className="space-y-4 border-t border-gold-500/20 pt-4">
+                                                    <h3 className="text-lg font-semibold text-white">Contact Information</h3>
 
-                                        {/* CTA Buttons */}
-                                        <button
-                                            onClick={handleBooking}
-                                            className="w-full btn-primary flex items-center justify-center gap-2"
-                                        >
-                                            <FaWhatsapp className="text-xl" />
-                                            BOOK VIA WHATSAPP
-                                        </button>
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                                                            <FaUser className="inline mr-2" />
+                                                            FULL NAME *
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            value={contactInfo.name}
+                                                            onChange={(e) => setContactInfo({ ...contactInfo, name: e.target.value })}
+                                                            placeholder="Enter your full name"
+                                                            className="w-full bg-navy-700 border border-gold-500/30 rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-500"
+                                                            required
+                                                        />
+                                                    </div>
 
-                                        <p className="text-center text-gray-400 text-sm">
-                                            Or call us at{' '}
-                                            <a href="tel:+971XXXXXXXXX" className="text-gold-500 hover:underline">
-                                                +971 XX XXX XXXX
-                                            </a>
-                                        </p>
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                                                            <FaEnvelope className="inline mr-2" />
+                                                            EMAIL *
+                                                        </label>
+                                                        <input
+                                                            type="email"
+                                                            value={contactInfo.email}
+                                                            onChange={(e) => setContactInfo({ ...contactInfo, email: e.target.value })}
+                                                            placeholder="your@email.com"
+                                                            className="w-full bg-navy-700 border border-gold-500/30 rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-500"
+                                                            required
+                                                        />
+                                                    </div>
+
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                                                            <FaPhone className="inline mr-2" />
+                                                            PHONE *
+                                                        </label>
+                                                        <input
+                                                            type="tel"
+                                                            value={contactInfo.phone}
+                                                            onChange={(e) => setContactInfo({ ...contactInfo, phone: e.target.value })}
+                                                            placeholder="+971 XX XXX XXXX"
+                                                            className="w-full bg-navy-700 border border-gold-500/30 rounded-md px-4 py-3 text-white focus:outline-none focus:border-gold-500"
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Price Breakdown */}
+                                                <div className="border-t border-gold-500/20 pt-4 space-y-2">
+                                                    <div className="flex justify-between text-gray-300">
+                                                        <span>Subtotal</span>
+                                                        <span>AED {bookingCalculation.subtotal.toFixed(2)}</span>
+                                                    </div>
+                                                    <div className="flex justify-between text-gray-300">
+                                                        <span>VAT ({package_.pricing?.vatPercentage || 5}%)</span>
+                                                        <span>AED {bookingCalculation.vat.toFixed(2)}</span>
+                                                    </div>
+                                                    <div className="flex justify-between text-xl font-bold text-white border-t border-gold-500/20 pt-2">
+                                                        <span>Total</span>
+                                                        <span className="text-gold-500">AED {bookingCalculation.total.toFixed(2)}</span>
+                                                    </div>
+                                                </div>
+
+                                                {/* CTA Buttons */}
+                                                <button
+                                                    onClick={handleBooking}
+                                                    disabled={submitting}
+                                                    className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50"
+                                                >
+                                                    <FaCreditCard className="text-xl" />
+                                                    {submitting ? 'Processing...' : 'PROCEED TO PAYMENT'}
+                                                </button>
+
+                                                <button
+                                                    onClick={handleWhatsAppBooking}
+                                                    className="w-full btn-secondary flex items-center justify-center gap-2"
+                                                >
+                                                    <FaWhatsapp className="text-xl" />
+                                                    BOOK VIA WHATSAPP
+                                                </button>
+
+                                                <p className="text-center text-gray-400 text-sm">
+                                                    Or call us at{' '}
+                                                    <a href="tel:+971XXXXXXXXX" className="text-gold-500 hover:underline">
+                                                        +971 XX XXX XXXX
+                                                    </a>
+                                                </p>
+                                            </>
+                                        )}
+
+                                        {/* Step 2: Payment */}
+                                        {step === 'payment' && paymentData && (
+                                            <div className="space-y-4">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <button
+                                                        onClick={handleBackToForm}
+                                                        className="text-gold-500 hover:text-gold-400 flex items-center gap-2"
+                                                    >
+                                                        <FaArrowLeft /> Back
+                                                    </button>
+                                                    <h3 className="text-lg font-semibold text-white">Complete Payment</h3>
+                                                </div>
+
+                                                <div className="bg-navy-700 p-4 rounded-lg mb-4">
+                                                    <h4 className="font-semibold text-white mb-2">Booking Summary</h4>
+                                                    <div className="space-y-1 text-sm text-gray-300">
+                                                        <p><strong>Package:</strong> {package_.title}</p>
+                                                        <p><strong>Date:</strong> {bookingData.date?.toLocaleDateString()}</p>
+                                                        <p><strong>Time:</strong> {bookingData.startTime}</p>
+                                                        <p><strong>Guests:</strong> {bookingData.adults} Adults, {bookingData.children} Children, {bookingData.infants} Infants</p>
+                                                        <p className="text-lg font-bold text-gold-500 mt-2">
+                                                            Total: AED {bookingCalculation.total.toFixed(2)}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <StripeCheckout
+                                                    clientSecret={paymentData.clientSecret}
+                                                    orderId={paymentData.orderId}
+                                                    orderNumber={paymentData.orderNumber}
+                                                    totalAmount={paymentData.totalAmount}
+                                                    onSuccess={handlePaymentSuccess}
+                                                    onError={handlePaymentError}
+                                                />
+                                            </div>
+                                        )}
+
+                                        {/* Step 3: Success */}
+                                        {step === 'success' && paymentData && (
+                                            <div className="space-y-6 text-center py-8">
+                                                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto">
+                                                    <FaCheckCircle className="text-3xl text-white" />
+                                                </div>
+
+                                                <div>
+                                                    <h3 className="text-2xl font-bold text-white mb-2">Booking Confirmed!</h3>
+                                                    <p className="text-gray-300">
+                                                        Your payment was successful and your booking has been confirmed.
+                                                    </p>
+                                                </div>
+
+                                                <div className="bg-navy-700 p-6 rounded-lg text-left">
+                                                    <h4 className="font-semibold text-white mb-3">Booking Details</h4>
+                                                    <div className="space-y-2 text-sm text-gray-300">
+                                                        <p><strong>Order Number:</strong> {paymentData.orderNumber}</p>
+                                                        <p><strong>Package:</strong> {package_.title}</p>
+                                                        <p><strong>Date:</strong> {bookingData.date?.toLocaleDateString()}</p>
+                                                        <p><strong>Time:</strong> {bookingData.startTime}</p>
+                                                        <p><strong>Guests:</strong> {bookingData.adults} Adults, {bookingData.children} Children, {bookingData.infants} Infants</p>
+                                                        <p className="text-lg font-bold text-gold-500 mt-3 pt-3 border-t border-gold-500/20">
+                                                            Amount Paid: AED {bookingCalculation.total.toFixed(2)}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <p className="text-gray-400 text-sm">
+                                                    A confirmation email has been sent to <strong className="text-white">{contactInfo.email}</strong>
+                                                </p>
+
+                                                <button
+                                                    onClick={handleNewBooking}
+                                                    className="w-full btn-primary"
+                                                >
+                                                    Make Another Booking
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Availability Note */}

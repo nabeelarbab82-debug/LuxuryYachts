@@ -8,14 +8,14 @@ export default function Gallery() {
     const [selectedVideo, setSelectedVideo] = useState(false);
 
     const images = [
-        { src: '/gallery/yacht-exterior.jpg', alt: 'Yacht Exterior at Sunset' },
-        { src: '/gallery/dining-setup.jpg', alt: 'Elegant Dining Setup' },
-        { src: '/gallery/guests-dinner.jpg', alt: 'Guests Enjoying Dinner' },
-        { src: '/gallery/marina-skyline.jpg', alt: 'Dubai Marina Skyline' },
-        { src: '/gallery/entertainment.jpg', alt: 'Live Entertainment' },
-        { src: '/gallery/deck-view.jpg', alt: 'Open Deck View' },
-        { src: '/gallery/interior.jpg', alt: 'Luxury Interior' },
-        { src: '/gallery/night-cruise.jpg', alt: 'Night Cruise Experience' },
+        { src: '/gallery/yacht-exterior.jpeg', alt: 'Yacht Exterior at Sunset' },
+        { src: '/gallery/dining-setup.jpeg', alt: 'Elegant Dining Setup' },
+        { src: '/gallery/guests-dinner.jpeg', alt: 'Guests Enjoying Dinner' },
+        { src: '/gallery/marina-skyline.jpeg', alt: 'Dubai Marina Skyline' },
+        { src: '/gallery/entertainment.jpeg', alt: 'Live Entertainment' },
+        { src: '/gallery/deck-view.jpeg', alt: 'Open Deck View' },
+        { src: '/gallery/interior.jpeg', alt: 'Luxury Interior' },
+        { src: '/gallery/night-cruise.jpeg', alt: 'Night Cruise Experience' },
     ];
 
     return (
@@ -51,7 +51,7 @@ export default function Gallery() {
                         </div>
                     </div>
                     <img
-                        src="/gallery/video-thumbnail.jpg"
+                        src="/gallery/video-thumbnail.jpeg"
                         alt="Experience Video"
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         onError={(e) => {
@@ -89,17 +89,30 @@ export default function Gallery() {
                     ))}
                 </div>
 
-                {/* Video Modal (Simple Implementation) */}
+                {/* Video Modal */}
                 {selectedVideo && (
                     <div
                         className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
                         onClick={() => setSelectedVideo(false)}
                     >
-                        <div className="max-w-4xl w-full">
+                        <div className="max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
                             <div className="bg-navy-800 p-4 rounded-lg">
-                                <div className="aspect-video bg-navy-700 flex items-center justify-center">
-                                    <p className="text-gray-400">Video player placeholder - Add your video URL here</p>
+                                <div className="aspect-video bg-navy-700">
+                                    <video
+                                        className="w-full h-full"
+                                        controls
+                                        autoPlay
+                                        src="https://res.cloudinary.com/dm87rn19g/video/upload/v1771466574/jcsvgrwo16rnvz3ktktf.mp4"
+                                    >
+                                        Your browser does not support the video tag.
+                                    </video>
                                 </div>
+                                <button
+                                    onClick={() => setSelectedVideo(false)}
+                                    className="mt-4 w-full btn-secondary py-2"
+                                >
+                                    Close
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -13,30 +13,48 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error('Please provide email and password');
-        }
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.log('❌ Missing credentials');
+            throw new Error('Please provide email and password');
+          }
 
-        await connectDB();
-        
-        const admin = await Admin.findOne({ email: credentials.email, active: true });
-        
-        if (!admin) {
-          throw new Error('Invalid credentials');
-        }
+          console.log('🔍 Attempting login for:', credentials.email);
+          
+          await connectDB();
+          console.log('✅ Database connected');
+          
+          const admin = await Admin.findOne({ email: credentials.email, active: true });
+          
+          if (!admin) {
+            console.log('❌ Admin not found or inactive');
+            throw new Error('Invalid credentials');
+          }
 
-        const isPasswordValid = await bcrypt.compare(credentials.password, admin.password);
-        
-        if (!isPasswordValid) {
-          throw new Error('Invalid credentials');
-        }
+          console.log('✅ Admin found:', admin.email);
+          console.log('🔐 Testing password...');
+          
+          const isPasswordValid = await bcrypt.compare(credentials.password, admin.password);
+          
+          console.log('🔐 Password valid:', isPasswordValid);
+          
+          if (!isPasswordValid) {
+            console.log('❌ Password comparison failed');
+            throw new Error('Invalid credentials');
+          }
 
-        return {
-          id: admin._id.toString(),
-          email: admin.email,
-          name: admin.name,
-          role: admin.role,
-        };
+          console.log('✅ Login successful for:', admin.email);
+          
+          return {
+            id: admin._id.toString(),
+            email: admin.email,
+            name: admin.name,
+            role: admin.role,
+          };
+        } catch (error) {
+          console.error('❌ Auth error:', error);
+          throw error;
+        }
       }
     })
   ],

@@ -1,10 +1,29 @@
 'use client';
 
-import { FaClock, FaUtensils, FaMusic, FaMapMarkerAlt } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { FaClock, FaUtensils, FaMusic, FaMapMarkerAlt, FaShip } from 'react-icons/fa';
 import BookingCard from './BookingCard';
 import { motion } from 'framer-motion';
 
 export default function Hero() {
+    const [packageCount, setPackageCount] = useState(0);
+
+    useEffect(() => {
+        fetchPackageCount();
+    }, []);
+
+    const fetchPackageCount = async () => {
+        try {
+            const res = await fetch('/api/packages');
+            const data = await res.json();
+            if (data.success) {
+                setPackageCount(data.packages.filter((p: any) => p.active).length);
+            }
+        } catch (error) {
+            console.error('Error fetching packages:', error);
+        }
+    };
+
     const highlights = [
         { icon: <FaClock />, text: '2.5-3 hour cruise' },
         { icon: <FaUtensils />, text: 'Buffet & premium dining' },
@@ -44,7 +63,7 @@ export default function Hero() {
 
                     {/* Fallback Image if video doesn't load */}
                     <img
-                        src="/hero-yacht.jpg"
+                        src="/hero-yacht.jpeg"
                         alt="Luxury Yacht"
                         className="absolute inset-0 w-full h-full object-cover -z-10"
                         onError={(e) => {
@@ -70,9 +89,16 @@ export default function Hero() {
                             <span className="text-gold-500">135-Seat Yacht</span>
                         </h1>
 
-                        <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-xl">
+                        <p className="text-lg md:text-xl text-gray-300 mb-4 max-w-xl">
                             An unforgettable evening with dining, live entertainment, and Dubai skyline views.
                         </p>
+
+                        {packageCount > 0 && (
+                            <div className="flex items-center gap-2 mb-8 text-gold-500">
+                                <FaShip className="text-xl" />
+                                <span className="text-lg font-semibold">{packageCount} Exclusive Packages Available</span>
+                            </div>
+                        )}
 
                         {/* Highlights */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">

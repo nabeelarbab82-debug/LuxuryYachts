@@ -125,8 +125,9 @@ export default function ManagePackagesPage() {
                 <div className="card-luxury mb-6">
                     <div className="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium mb-2">Search</label>
+                            <label htmlFor="search-packages" className="block text-sm font-medium mb-2">Search</label>
                             <input
+                                id="search-packages"
                                 type="text"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -135,8 +136,9 @@ export default function ManagePackagesPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-2">Filter by Type</label>
+                            <label htmlFor="filter-type" className="block text-sm font-medium mb-2">Filter by Type</label>
                             <select
+                                id="filter-type"
                                 value={filterType}
                                 onChange={(e) => setFilterType(e.target.value)}
                                 className="w-full bg-navy-700 border border-ocean-500/30 rounded-md px-4 py-2 text-white"
@@ -260,6 +262,7 @@ export default function ManagePackagesPage() {
                                             <button
                                                 onClick={() => deletePackage(pkg._id, allPublicIds)}
                                                 className="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2 rounded-md transition-colors flex items-center justify-center"
+                                                aria-label="Delete package"
                                             >
                                                 <FaTrash />
                                             </button>

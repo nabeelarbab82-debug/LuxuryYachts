@@ -95,18 +95,21 @@ export default function Footer() {
                         <a
                             href="#"
                             className="text-gray-400 hover:text-gold-500 transition-colors text-2xl"
+                            aria-label="Follow us on Facebook"
                         >
                             <FaFacebook />
                         </a>
                         <a
                             href="#"
                             className="text-gray-400 hover:text-gold-500 transition-colors text-2xl"
+                            aria-label="Follow us on Instagram"
                         >
                             <FaInstagram />
                         </a>
                         <a
                             href="#"
                             className="text-gray-400 hover:text-gold-500 transition-colors text-2xl"
+                            aria-label="Follow us on Twitter"
                         >
                             <FaTwitter />
                         </a>
@@ -118,6 +121,7 @@ export default function Footer() {
                                 window.open(`https://wa.me/${number}`, '_blank');
                             }}
                             className="text-gray-400 hover:text-gold-500 transition-colors text-2xl"
+                            aria-label="Contact us on WhatsApp"
                         >
                             <FaWhatsapp />
                         </a>

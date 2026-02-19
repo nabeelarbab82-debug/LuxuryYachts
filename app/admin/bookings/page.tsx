@@ -132,8 +132,9 @@ export default function ManageBookingsPage() {
                 <div className="card-luxury mb-6">
                     <div className="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium mb-2">Search</label>
+                            <label htmlFor="search-bookings" className="block text-sm font-medium mb-2">Search</label>
                             <input
+                                id="search-bookings"
                                 type="text"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -142,8 +143,9 @@ export default function ManageBookingsPage() {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-2">Filter by Status</label>
+                            <label htmlFor="filter-status" className="block text-sm font-medium mb-2">Filter by Status</label>
                             <select
+                                id="filter-status"
                                 value={filterStatus}
                                 onChange={(e) => setFilterStatus(e.target.value)}
                                 className="w-full bg-navy-700 border border-ocean-500/30 rounded-md px-4 py-2 text-white"
@@ -173,9 +175,9 @@ export default function ManageBookingsPage() {
                                         <div className="flex items-center justify-between">
                                             <h3 className="text-lg font-bold text-white">{booking.name}</h3>
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${booking.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' :
-                                                    booking.status === 'confirmed' ? 'bg-green-500/20 text-green-400' :
-                                                        booking.status === 'completed' ? 'bg-blue-500/20 text-blue-400' :
-                                                            'bg-red-500/20 text-red-400'
+                                                booking.status === 'confirmed' ? 'bg-green-500/20 text-green-400' :
+                                                    booking.status === 'completed' ? 'bg-blue-500/20 text-blue-400' :
+                                                        'bg-red-500/20 text-red-400'
                                                 }`}>
                                                 {booking.status?.toUpperCase()}
                                             </span>

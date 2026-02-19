@@ -181,7 +181,7 @@ export default function AdminPage() {
                 {/* Quick Actions */}
                 <div className="mb-8">
                     <h2 className="text-xl font-bold mb-4 text-gold-500">Quick Actions</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <Link
                             href="/admin/packages/create"
                             className="bg-gradient-to-br from-ocean-500 to-ocean-600 hover:from-ocean-600 hover:to-ocean-500 text-white p-6 rounded-lg shadow-lg shadow-ocean-500/30 hover:shadow-ocean-500/50 transition-all flex items-center gap-4 group"
@@ -212,6 +212,17 @@ export default function AdminPage() {
                             <div>
                                 <p className="font-bold text-lg">View Bookings</p>
                                 <p className="text-sm text-sunset-100">Manage all bookings</p>
+                            </div>
+                        </Link>
+
+                        <Link
+                            href="/admin/orders"
+                            className="bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-500 text-white p-6 rounded-lg shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-all flex items-center gap-4 group"
+                        >
+                            <FaDollarSign className="text-3xl group-hover:scale-110 transition-transform" />
+                            <div>
+                                <p className="font-bold text-lg">View Orders</p>
+                                <p className="text-sm text-green-100">Manage payments & orders</p>
                             </div>
                         </Link>
                     </div>

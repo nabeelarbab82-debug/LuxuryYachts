@@ -62,6 +62,7 @@ export default function WhatsAppButton() {
                                         <button
                                             onClick={() => setShowTooltip(false)}
                                             className="absolute -top-1 -right-1 bg-navy-900 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs"
+                                            aria-label="Close tooltip"
                                         >
                                             <FaTimes />
                                         </button>

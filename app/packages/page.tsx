@@ -78,7 +78,9 @@ export default function PackagesPage() {
                             {/* Filter */}
                             <div className="md:w-64 relative">
                                 <FaFilter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                                <label htmlFor="package-type-filter" className="sr-only">Filter by package type</label>
                                 <select
+                                    id="package-type-filter"
                                     value={filterType}
                                     onChange={(e) => setFilterType(e.target.value)}
                                     className="w-full bg-navy-700 border border-gold-500/30 rounded-lg pl-12 pr-4 py-3 text-white focus:outline-none focus:border-gold-500 appearance-none cursor-pointer"

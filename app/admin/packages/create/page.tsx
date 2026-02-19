@@ -262,8 +262,9 @@ export default function CreatePackagePage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-2">Type *</label>
+                                <label htmlFor="package-type" className="block text-sm font-medium mb-2">Type *</label>
                                 <select
+                                    id="package-type"
                                     value={formData.type}
                                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                                     className="w-full bg-navy-700 border border-ocean-500/30 rounded-md px-4 py-3 text-white"
@@ -288,8 +289,9 @@ export default function CreatePackagePage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-2">Price Type *</label>
+                                <label htmlFor="price-type" className="block text-sm font-medium mb-2">Price Type *</label>
                                 <select
+                                    id="price-type"
                                     value={formData.priceType}
                                     onChange={(e) => setFormData({ ...formData, priceType: e.target.value })}
                                     className="w-full bg-navy-700 border border-ocean-500/30 rounded-md px-4 py-3 text-white"
@@ -302,8 +304,9 @@ export default function CreatePackagePage() {
 
                             {formData.priceType === 'per_hour' && (
                                 <div>
-                                    <label className="block text-sm font-medium mb-2">Minimum Booking Hours</label>
+                                    <label htmlFor="minimum-booking-hours" className="block text-sm font-medium mb-2">Minimum Booking Hours</label>
                                     <input
+                                        id="minimum-booking-hours"
                                         type="number"
                                         value={formData.minimumBookingHours}
                                         onChange={(e) => setFormData({ ...formData, minimumBookingHours: parseInt(e.target.value) })}
@@ -374,6 +377,7 @@ export default function CreatePackagePage() {
                                             setMainImage(null);
                                         }}
                                         className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                                        aria-label="Delete main image"
                                     >
                                         <FaTrash />
                                     </button>
@@ -406,11 +410,13 @@ export default function CreatePackagePage() {
                                             type="button"
                                             onClick={() => removeGalleryImage(index)}
                                             className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                            aria-label={`Delete image ${index + 1}`}
                                         >
                                             <FaTrash className="text-sm" />
                                         </button>
                                         <input
                                             type="text"
+                                            aria-label={`Caption for image ${index + 1}`}
                                             placeholder="Caption (optional)"
                                             value={image.caption}
                                             onChange={(e) => updateGalleryCaption(index, e.target.value)}
@@ -458,6 +464,7 @@ export default function CreatePackagePage() {
                                     type="button"
                                     onClick={() => removeInclusion(index)}
                                     className="px-4 py-2 bg-red-500/20 text-red-400 rounded-md hover:bg-red-500/30"
+                                    aria-label="Remove inclusion"
                                 >
                                     <FaTimes />
                                 </button>
@@ -533,6 +540,7 @@ export default function CreatePackagePage() {
                                         type="button"
                                         onClick={() => removeAmenity(index)}
                                         className="px-4 py-2 bg-red-500/20 text-red-400 rounded-md hover:bg-red-500/30"
+                                        aria-label="Remove amenity"
                                     >
                                         <FaTimes />
                                     </button>
@@ -553,8 +561,9 @@ export default function CreatePackagePage() {
                         <h2 className="text-xl font-bold text-gold-500 mb-4">Detailed Pricing</h2>
                         <div className="grid md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium mb-2">Adult Price (AED)</label>
+                                <label htmlFor="adult-price" className="block text-sm font-medium mb-2">Adult Price (AED)</label>
                                 <input
+                                    id="adult-price"
                                     type="number"
                                     value={formData.adultPrice}
                                     onChange={(e) => setFormData({ ...formData, adultPrice: e.target.value })}
@@ -562,8 +571,9 @@ export default function CreatePackagePage() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-2">Child Price (AED)</label>
+                                <label htmlFor="child-price" className="block text-sm font-medium mb-2">Child Price (AED)</label>
                                 <input
+                                    id="child-price"
                                     type="number"
                                     value={formData.childPrice}
                                     onChange={(e) => setFormData({ ...formData, childPrice: e.target.value })}
@@ -571,8 +581,9 @@ export default function CreatePackagePage() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-2">Infant Price (AED)</label>
+                                <label htmlFor="infant-price" className="block text-sm font-medium mb-2">Infant Price (AED)</label>
                                 <input
+                                    id="infant-price"
                                     type="number"
                                     value={formData.infantPrice}
                                     onChange={(e) => setFormData({ ...formData, infantPrice: e.target.value })}
@@ -581,8 +592,9 @@ export default function CreatePackagePage() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-2">VAT Percentage (%)</label>
+                                <label htmlFor="vat-percentage" className="block text-sm font-medium mb-2">VAT Percentage (%)</label>
                                 <input
+                                    id="vat-percentage"
                                     type="number"
                                     value={formData.vatPercentage}
                                     onChange={(e) => setFormData({ ...formData, vatPercentage: parseFloat(e.target.value) })}

@@ -65,7 +65,7 @@ export default function Experience() {
                     >
                         <div className="absolute inset-0 bg-gradient-to-t from-navy-900 via-transparent to-transparent z-10"></div>
                         <img
-                            src="/experience-yacht.jpg"
+                            src="/experience-yacht.jpeg"
                             alt="Luxury Yacht Experience"
                             className="w-full h-full object-cover"
                             onError={(e) => {

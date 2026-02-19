@@ -8,7 +8,7 @@ const BookingSchema = new Schema({
   packageId: {
     type: Schema.Types.ObjectId,
     ref: 'Package',
-    required: true,
+    required: false,
   },
   packageName: String,
   name: {
