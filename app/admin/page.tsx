@@ -28,16 +28,37 @@ export default function AdminPage() {
 
     useEffect(() => {
         if (status === 'unauthenticated') {
+            type Appointment = {
+                id: string;
+                name: string;
+                email: string;
+                date: string;
+                message: string;
+            };
             router.push('/admin/login');
         }
     }, [status, router]);
 
+    const [appointments, setAppointments] = useState([]);
+
     useEffect(() => {
         if (status === 'authenticated') {
             fetchDashboardData();
+            fetchAppointments();
         }
     }, [status]);
 
+    const fetchAppointments = async () => {
+        try {
+            const res = await fetch('/api/appointments');
+            if (res.ok) {
+                const data = await res.json();
+                setAppointments(data);
+            }
+        } catch (error) {
+            console.error('Error fetching appointments:', error);
+        }
+    };
     const fetchDashboardData = async () => {
         try {
             // Fetch packages
@@ -86,6 +107,7 @@ export default function AdminPage() {
     if (status === 'loading' || loading) {
         return (
             <div className="min-h-screen bg-navy-900 flex items-center justify-center">
+
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-500"></div>
             </div>
         );
