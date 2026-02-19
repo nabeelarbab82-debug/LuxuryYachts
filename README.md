@@ -62,8 +62,8 @@ A premium, full-stack Next.js application for a luxury dinner cruise business in
    Update `.env.local` with your details:
 
    ```env
-   MONGODB_URI=mongodb+srv://hammad:Hammad12345.@e-commerce.y3w9cfo.mongodb.net/
-   MONGODB_DB=dinner_cruise
+   MONGODB_URI=********
+   MONGODB_DB=******
    NEXT_PUBLIC_WHATSAPP_NUMBER=971XXXXXXXXX
    NEXT_PUBLIC_WHATSAPP_MESSAGE=Hi, I would like to inquire about the luxury dinner cruise booking.
    ```
