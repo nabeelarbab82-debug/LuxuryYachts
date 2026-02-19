@@ -43,34 +43,22 @@ export default function Hero() {
 
     return (
         <section className="relative min-h-screen flex items-center">
-            {/* Background Video */}
+            {/* Background Image */}
             <div className="absolute inset-0 z-0">
                 <div className="relative w-full h-full overflow-hidden">
-                    {/* Video Element */}
-                    <video
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="w-full h-full object-cover"
-                    >
-                        <source src="/videos/hero-yacht.mp4" type="video/mp4" />
-                        {/* Fallback for browsers that don't support video */}
-                    </video>
-
-                    {/* Overlay for better text readability */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-navy-900/90 via-navy-800/70 to-navy-900/40 z-10"></div>
-
-                    {/* Fallback Image if video doesn't load */}
+                    {/* Background Image */}
                     <img
-                        src="/hero-yacht.jpeg"
+                        src="/hero-yatch.jpeg"
                         alt="Luxury Yacht"
-                        className="absolute inset-0 w-full h-full object-cover -z-10"
+                        className="w-full h-full object-cover"
                         onError={(e) => {
                             e.currentTarget.style.display = 'none';
                             e.currentTarget.parentElement!.style.background = 'linear-gradient(135deg, #0a1628 0%, #1a2942 100%)';
                         }}
                     />
+
+                    {/* Overlay for better text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-navy-900/90 via-navy-800/70 to-navy-900/40 z-10"></div>
                 </div>
             </div>
 
